@@ -43,26 +43,26 @@ export default class Todo extends Component {
 
   handleRemove() {
     return todo => axios.delete(`${URL}/${todo._id}`)
-      .then(resp => {
-        this.setState({
+      .then(() => this.setState({
           ...this.state,
-          list : 
+          list : this.state.list.filter(item => item._id !== todo._id)
         })
+      )
+  }
+
+  handleToggleMark() {
+    return todo => axios.put(`${URL}/${todo._id}`, {
+      ...todo,
+      done: !todo.done
+    }).then(() => {
+      this.setState({
+        ...this.state,
+        list : this.state.list.map( item =>  {
+          item.done = item._id === todo._id ? !item.done : item.done
+          return item
+        } )
       })
-  }
-
-  handleMarkAsDone() {
-    return todo => axios.put(`${URL}/${todo._id}`, {
-      ...todo,
-      done: true
-    }).then(resp => this.refresh())
-  }
-
-  handleMarkAsPending() {
-    return todo => axios.put(`${URL}/${todo._id}`, {
-      ...todo,
-      done: false
-    }).then(resp => this.refresh())
+    })
   }
 
   handleClear() {
@@ -84,8 +84,7 @@ export default class Todo extends Component {
         <TodoList 
         list={this.state.list} 
         handleRemove={this.handleRemove()} 
-        handleMarkAsPending={this.handleMarkAsPending()} 
-        handleMarkAsDone={this.handleMarkAsDone()} 
+        handleToggleMark={this.handleToggleMark()} 
         />
       </div>
     )
