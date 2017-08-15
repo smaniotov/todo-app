@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import { createStore } from 'redux'
+import { Provider } from 'redux'
+
 import axios from 'axios';
 
 import PageHeader from '../template/pageHeader';
@@ -6,7 +9,7 @@ import TodoForm from './todoForm';
 import TodoList from './todoList';
 
 const URL = 'http://localhost:3003/api/todos';
-
+const store = createStore
 export default class Todo extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +33,7 @@ export default class Todo extends Component {
 
   handleAdd() {
     const description = this.state.description;
-    return () => axios.post(URL, {description}).then(resp => this.refresh())
+    return () => axios.post(URL, {description} ).then(resp => this.refresh())
   }
 
   handleChange() {
@@ -43,10 +46,11 @@ export default class Todo extends Component {
 
   handleRemove() {
     return todo => axios.delete(`${URL}/${todo._id}`)
-      .then(() => this.setState({
+      .then(() => {
+        this.setState({
           ...this.state,
           list : this.state.list.filter(item => item._id !== todo._id)
-        })
+        })}
       )
   }
 
